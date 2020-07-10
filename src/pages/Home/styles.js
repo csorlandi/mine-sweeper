@@ -8,15 +8,15 @@ export const Container = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-  flex-direction: row;
-`;
-
-export const HomeIcon = styled(Icon)`
-  font-size: 24px;
 `;
 
 export const Title = styled.Text`
   font-size: 24px;
   font-weight: bold;
-  margin-left: 16px;
+  margin-bottom: 16px;
+`;
+
+export const SubTitle = styled.Text`
+  font-size: 16px;
+  margin-bottom: 32px;
 `;
