@@ -2,6 +2,8 @@ import React from 'react';
 
 import { useBoard } from '~/hooks/board';
 
+import Field from '~/components/Field';
+
 import * as S from './styles';
 
 export default function Home() {
@@ -17,6 +19,17 @@ export default function Home() {
       <S.SubTitle>{board.blockSize}px</S.SubTitle>
       <S.Title>Difficulty:</S.Title>
       <S.SubTitle>{board.difficulty * 100}%</S.SubTitle>
+      <Field />
+      <Field opened />
+      <Field opened nearMinesQuantity={1} />
+      <Field opened nearMinesQuantity={2} />
+      <Field opened nearMinesQuantity={3} />
+      <Field opened nearMinesQuantity={6} />
+      <Field mined />
+      <Field mined opened />
+      <Field mined opened exploded />
+      <Field flagged />
+      <Field flagged opened />
     </S.Container>
   );
 }

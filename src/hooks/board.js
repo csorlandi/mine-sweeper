@@ -7,7 +7,7 @@ const { width, height } = Dimensions.get('window');
 const BoardContext = createContext({});
 
 function BoardProvider({ children }) {
-  const [maxColumnsNumber, setMaxColumnsNumber] = useState(15);
+  const [maxColumnsNumber, setMaxColumnsNumber] = useState(10);
   const [blockSize, setBlockSize] = useState(() => {
     const blockSizeWithoutMargin = width / maxColumnsNumber;
     const blockSizeWithMargin = blockSizeWithoutMargin - 4;

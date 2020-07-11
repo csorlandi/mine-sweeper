@@ -9,7 +9,13 @@ const Stack = createStackNavigator();
 export default function Routes() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="home" component={Home} />
+      <Stack.Screen
+        name="home"
+        component={Home}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }
