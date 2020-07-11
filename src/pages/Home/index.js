@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useBoard } from '~/hooks/board';
 
-import Field from '~/components/Field';
+import MineField from '~/components/MineField';
 
 import * as S from './styles';
 
@@ -10,26 +10,12 @@ export default function Home() {
   const board = useBoard();
 
   return (
-    <S.Container>
-      <S.Title>Tamanho do Board:</S.Title>
-      <S.SubTitle>
-        {board.maxColumnsNumber} x {board.maxRowsNumber}
-      </S.SubTitle>
-      <S.Title>BlockSize:</S.Title>
-      <S.SubTitle>{board.blockSize}px</S.SubTitle>
-      <S.Title>Difficulty:</S.Title>
-      <S.SubTitle>{board.difficulty * 100}%</S.SubTitle>
-      <Field />
-      <Field opened />
-      <Field opened nearMinesQuantity={1} />
-      <Field opened nearMinesQuantity={2} />
-      <Field opened nearMinesQuantity={3} />
-      <Field opened nearMinesQuantity={6} />
-      <Field mined />
-      <Field mined opened />
-      <Field mined opened exploded />
-      <Field flagged />
-      <Field flagged opened />
-    </S.Container>
+    <S.SafeAreaContainer>
+      <S.HeaderContainer />
+      <S.BoardContainer>
+        <MineField />
+      </S.BoardContainer>
+      <S.FooterContainer />
+    </S.SafeAreaContainer>
   );
 }

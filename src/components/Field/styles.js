@@ -29,7 +29,7 @@ export const Container = styled.View`
   border-color: ${({ opened }) => (opened ? '#bdbdc9' : '#3d3d40')};
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin: 2px;
 `;
 
 function colorSwitch(nearMinesQuantity) {

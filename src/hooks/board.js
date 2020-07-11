@@ -4,20 +4,24 @@ import PropTypes from 'prop-types';
 import { Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
+console.log(width, height);
 
 const BoardContext = createContext({});
 
 function BoardProvider({ children }) {
   const [maxColumnsNumber, setMaxColumnsNumber] = useState(10);
   const [blockSize, setBlockSize] = useState(() => {
+    const marginDeduction = ((maxColumnsNumber + 1) * 4) / maxColumnsNumber;
     const blockSizeWithoutMargin = width / maxColumnsNumber;
-    const blockSizeWithMargin = blockSizeWithoutMargin - 4;
+    const blockSizeWithMargin = blockSizeWithoutMargin - marginDeduction;
+
+    console.log('blockSize', blockSizeWithMargin);
 
     return blockSizeWithMargin;
   });
   const [maxRowsNumber, setMaxRowsNumber] = useState(() => {
-    const resizedHeight = height * 0.6;
-    const numberOfRowsWithoutRound = resizedHeight / blockSize;
+    const resizedHeight = height * 0.7;
+    const numberOfRowsWithoutRound = resizedHeight / (blockSize + 4);
     const numberOfRowsRounded = Math.floor(numberOfRowsWithoutRound);
 
     return numberOfRowsRounded;
@@ -63,7 +67,14 @@ function BoardProvider({ children }) {
 
   return (
     <BoardContext.Provider
-      value={{ blockSize, maxColumnsNumber, maxRowsNumber, difficulty }}
+      value={{
+        blockSize,
+        maxColumnsNumber,
+        maxRowsNumber,
+        difficulty,
+        cleanBoard,
+        minedBoard,
+      }}
     >
       {children}
     </BoardContext.Provider>
