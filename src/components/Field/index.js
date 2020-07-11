@@ -50,5 +50,5 @@ Field.defaultProps = {
   flagged: false,
   exploded: false,
   mined: false,
-  nearMinesQuantity: null,
+  nearMinesQuantity: 0,
 };

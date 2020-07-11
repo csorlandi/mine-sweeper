@@ -23,6 +23,43 @@ function BoardProvider({ children }) {
     return numberOfRowsRounded;
   });
   const [difficulty, setDifficulty] = useState(0.1);
+  const [cleanBoard, setCleanBoard] = useState(() => {
+    const board = Array(maxRowsNumber)
+      .fill(0)
+      .map((_rowItem, rowIndex) => {
+        return Array(maxColumnsNumber)
+          .fill(0)
+          .map((_columnItem, columnIndex) => ({
+            row: rowIndex,
+            column: columnIndex,
+            opened: false,
+            flagged: false,
+            mined: false,
+            exploded: false,
+            nearMinesQuantity: 0,
+          }));
+      });
+
+    return board;
+  });
+  const [minedBoard, setMinedBoard] = useState(() => {
+    const board = cleanBoard;
+    const minesAmount = maxRowsNumber * maxColumnsNumber * difficulty;
+
+    let minesSpread = 0;
+
+    while (minesSpread < minesAmount) {
+      const selectedRow = Math.floor(Math.random() * maxRowsNumber);
+      const selectedColumn = Math.floor(Math.random() * maxColumnsNumber);
+
+      if (!board[selectedRow][selectedColumn].mined) {
+        board[selectedRow][selectedColumn].mined = true;
+        minesSpread += 1;
+      }
+    }
+
+    return board;
+  });
 
   return (
     <BoardContext.Provider
