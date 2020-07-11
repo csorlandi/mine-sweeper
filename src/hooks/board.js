@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 
 import { Dimensions } from 'react-native';
 
@@ -37,5 +38,9 @@ function useBoard() {
 
   return context;
 }
+
+BoardProvider.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 export { BoardProvider, useBoard };
