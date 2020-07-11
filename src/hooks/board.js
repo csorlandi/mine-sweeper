@@ -4,22 +4,19 @@ import PropTypes from 'prop-types';
 import { Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-console.log(width, height);
 
 const BoardContext = createContext({});
 
 function BoardProvider({ children }) {
-  const [maxColumnsNumber, setMaxColumnsNumber] = useState(10);
-  const [blockSize, setBlockSize] = useState(() => {
+  const [maxColumnsNumber] = useState(10);
+  const [blockSize] = useState(() => {
     const marginDeduction = ((maxColumnsNumber + 1) * 4) / maxColumnsNumber;
     const blockSizeWithoutMargin = width / maxColumnsNumber;
     const blockSizeWithMargin = blockSizeWithoutMargin - marginDeduction;
 
-    console.log('blockSize', blockSizeWithMargin);
-
     return blockSizeWithMargin;
   });
-  const [maxRowsNumber, setMaxRowsNumber] = useState(() => {
+  const [maxRowsNumber] = useState(() => {
     const resizedHeight = height * 0.7;
     const numberOfRowsWithoutRound = resizedHeight / (blockSize + 4);
     const numberOfRowsRounded = Math.floor(numberOfRowsWithoutRound);
@@ -47,7 +44,7 @@ function BoardProvider({ children }) {
     return board;
   });
   const [minedBoard, setMinedBoard] = useState(() => {
-    const board = cleanBoard;
+    const boardWithMines = cleanBoard;
     const minesAmount = maxRowsNumber * maxColumnsNumber * difficulty;
 
     let minesSpread = 0;
@@ -56,13 +53,42 @@ function BoardProvider({ children }) {
       const selectedRow = Math.floor(Math.random() * maxRowsNumber);
       const selectedColumn = Math.floor(Math.random() * maxColumnsNumber);
 
-      if (!board[selectedRow][selectedColumn].mined) {
-        board[selectedRow][selectedColumn].mined = true;
+      if (!boardWithMines[selectedRow][selectedColumn].mined) {
+        boardWithMines[selectedRow][selectedColumn].mined = true;
         minesSpread += 1;
       }
     }
 
-    return board;
+    boardWithMines.forEach((rowItem, rowIndex) => {
+      rowItem.forEach((columnItem, columnIndex) => {
+        const rowNeighbors = [rowIndex - 1, rowIndex, rowIndex + 1];
+        const columnNeighbors = [columnIndex - 1, columnIndex, columnIndex + 1];
+
+        if (columnItem.mined) {
+          rowNeighbors.forEach(rowNeighborsIndex => {
+            if (rowNeighborsIndex >= 0 && rowNeighborsIndex < maxRowsNumber) {
+              columnNeighbors.forEach(columnNeighborsIndex => {
+                if (
+                  columnNeighborsIndex >= 0 &&
+                  columnNeighborsIndex < maxColumnsNumber
+                ) {
+                  if (
+                    !boardWithMines[rowNeighborsIndex][columnNeighborsIndex]
+                      .mined
+                  ) {
+                    boardWithMines[rowNeighborsIndex][
+                      columnNeighborsIndex
+                    ].nearMinesQuantity += 1;
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+
+    return boardWithMines;
   });
 
   return (

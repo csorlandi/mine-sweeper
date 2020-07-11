@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { Text } from 'react-native';
-
 import { useBoard } from '~/hooks/board';
 
 import Field from '~/components/Field';
