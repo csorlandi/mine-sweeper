@@ -11,11 +11,16 @@ export default function Field({
   mined,
   exploded,
   flagged,
+  row,
+  column,
 }) {
   const board = useBoard();
 
   return (
-    <S.ButtonContainer>
+    <S.ButtonContainer
+      onPress={() => board.openField(row, column)}
+      onLongPress={() => board.invertFlag(row, column)}
+    >
       <S.Container
         blockSize={board.blockSize}
         opened={opened}
@@ -43,6 +48,8 @@ Field.propTypes = {
   exploded: PropTypes.bool,
   mined: PropTypes.bool,
   nearMinesQuantity: PropTypes.number,
+  row: PropTypes.number.isRequired,
+  column: PropTypes.number.isRequired,
 };
 
 Field.defaultProps = {

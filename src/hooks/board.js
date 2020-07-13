@@ -91,6 +91,45 @@ function BoardProvider({ children }) {
     return boardWithMines;
   });
 
+  function invertFlag(itemRowIndex, itemColumnIndex) {
+    setMinedBoard(
+      minedBoard.map((rowItem, rowIndex) => {
+        if (rowIndex === itemRowIndex) {
+          return rowItem.map((columnItem, columnIndex) => {
+            if (columnIndex === itemColumnIndex) {
+              return { ...columnItem, flagged: !columnItem.flagged };
+            }
+            return columnItem;
+          });
+        }
+        return rowItem;
+      }),
+    );
+  }
+
+  function openField(itemRowIndex, itemColumnIndex) {
+    const field = minedBoard[itemRowIndex][itemColumnIndex];
+
+    if (!field.opened && !field.flagged) {
+      console.log('entrei aqui');
+      console.log(field);
+      const exploded = field.mined;
+      setMinedBoard(
+        minedBoard.map((rowItem, rowIndex) => {
+          if (rowIndex === itemRowIndex) {
+            return rowItem.map((columnItem, columnIndex) => {
+              if (columnIndex === itemColumnIndex) {
+                return { ...columnItem, opened: true, exploded };
+              }
+              return columnItem;
+            });
+          }
+          return rowItem;
+        }),
+      );
+    }
+  }
+
   return (
     <BoardContext.Provider
       value={{
@@ -100,6 +139,8 @@ function BoardProvider({ children }) {
         difficulty,
         cleanBoard,
         minedBoard,
+        invertFlag,
+        openField,
       }}
     >
       {children}
