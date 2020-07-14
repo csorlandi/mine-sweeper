@@ -35,15 +35,21 @@ export const Container = styled.View`
 function colorSwitch(nearMinesQuantity) {
   switch (nearMinesQuantity) {
     case 1:
-      return '#2a28D7';
+      return '#0600FB';
     case 2:
-      return '#2B520F';
+      return '#017F01';
     case 3:
+      return '#FD0100';
     case 4:
+      return '#010180';
     case 5:
-      return '#F9060A';
+      return '#800202';
+    case 6:
+      return '#00807E';
+    case 7:
+      return '#000000';
     default:
-      return '#F221A9';
+      return '#808080';
   }
 }
 
