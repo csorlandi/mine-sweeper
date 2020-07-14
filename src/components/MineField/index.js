@@ -3,6 +3,7 @@ import React from 'react';
 import { useBoard } from '~/hooks/board';
 
 import Field from '~/components/Field';
+import GameOverModal from '~/components/GameOverModal';
 
 import * as S from './styles';
 
@@ -21,6 +22,7 @@ export default function MineField() {
           ))}
         </S.RowContainer>
       ))}
+      <GameOverModal />
     </S.Container>
   );
 }

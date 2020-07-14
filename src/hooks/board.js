@@ -55,41 +55,80 @@ function BoardProvider({ children }) {
 
       if (!boardWithMines[selectedRow][selectedColumn].mined) {
         boardWithMines[selectedRow][selectedColumn].mined = true;
+        boardWithMines[selectedRow][selectedColumn].nearMinesQuantity = 0;
+
+        const rowNeighbors = [selectedRow - 1, selectedRow, selectedRow + 1];
+        const columnNeighbors = [
+          selectedColumn - 1,
+          selectedColumn,
+          selectedColumn + 1,
+        ];
+
+        rowNeighbors.forEach(rowIndex => {
+          columnNeighbors.forEach(columnIndex => {
+            const different =
+              rowIndex !== selectedRow || columnIndex !== selectedColumn;
+            const validRow = rowIndex >= 0 && rowIndex < boardWithMines.length;
+            const validColumn =
+              columnIndex >= 0 && columnIndex < boardWithMines[0].length;
+            if (different && validRow && validColumn) {
+              const validField = !boardWithMines[rowIndex][columnIndex].mined;
+
+              if (validField)
+                boardWithMines[rowIndex][columnIndex].nearMinesQuantity += 1;
+            }
+          });
+        });
+
         minesSpread += 1;
       }
     }
 
-    boardWithMines.forEach((rowItem, rowIndex) => {
-      rowItem.forEach((columnItem, columnIndex) => {
-        const rowNeighbors = [rowIndex - 1, rowIndex, rowIndex + 1];
-        const columnNeighbors = [columnIndex - 1, columnIndex, columnIndex + 1];
+    return boardWithMines;
+  });
+  const [gameOverModalVisible, setGameOverModalVisible] = useState(false);
 
-        if (columnItem.mined) {
-          rowNeighbors.forEach(rowNeighborsIndex => {
-            if (rowNeighborsIndex >= 0 && rowNeighborsIndex < maxRowsNumber) {
-              columnNeighbors.forEach(columnNeighborsIndex => {
-                if (
-                  columnNeighborsIndex >= 0 &&
-                  columnNeighborsIndex < maxColumnsNumber
-                ) {
-                  if (
-                    !boardWithMines[rowNeighborsIndex][columnNeighborsIndex]
-                      .mined
-                  ) {
-                    boardWithMines[rowNeighborsIndex][
-                      columnNeighborsIndex
-                    ].nearMinesQuantity += 1;
-                  }
-                }
-              });
-            }
-          });
+  function toggleGameOverModal() {
+    setGameOverModalVisible(!gameOverModalVisible);
+  }
+
+  function getNeighbors(itemRowIndex, itemColumnIndex) {
+    const neighbors = [];
+    const rowNeighbors = [itemRowIndex - 1, itemRowIndex, itemRowIndex + 1];
+    const columnNeighbors = [
+      itemColumnIndex - 1,
+      itemColumnIndex,
+      itemColumnIndex + 1,
+    ];
+
+    rowNeighbors.forEach(rowIndex => {
+      columnNeighbors.forEach(columnIndex => {
+        const different =
+          rowIndex !== itemRowIndex || columnIndex !== itemColumnIndex;
+        const validRow = rowIndex >= 0 && rowIndex < minedBoard.length;
+        const validColumn =
+          columnIndex >= 0 && columnIndex < minedBoard[0].length;
+        if (different && validRow && validColumn) {
+          neighbors.push(minedBoard[rowIndex][columnIndex]);
         }
       });
     });
 
-    return boardWithMines;
-  });
+    return neighbors;
+  }
+
+  function openBoardFields(fieldRowIndex, fieldColumnIndex) {
+    setMinedBoard(
+      minedBoard.map((rowItem, rowIndex) => {
+        return rowItem.map((columnItem, columnIndex) => ({
+          ...columnItem,
+          opened: true,
+          exploded:
+            fieldRowIndex === rowIndex && fieldColumnIndex === columnIndex,
+        }));
+      }),
+    );
+  }
 
   function invertFlag(itemRowIndex, itemColumnIndex) {
     setMinedBoard(
@@ -111,22 +150,26 @@ function BoardProvider({ children }) {
     const field = minedBoard[itemRowIndex][itemColumnIndex];
 
     if (!field.opened && !field.flagged) {
-      console.log('entrei aqui');
-      console.log(field);
       const exploded = field.mined;
-      setMinedBoard(
-        minedBoard.map((rowItem, rowIndex) => {
-          if (rowIndex === itemRowIndex) {
-            return rowItem.map((columnItem, columnIndex) => {
-              if (columnIndex === itemColumnIndex) {
-                return { ...columnItem, opened: true, exploded };
-              }
-              return columnItem;
-            });
-          }
-          return rowItem;
-        }),
-      );
+
+      if (exploded) {
+        openBoardFields(itemRowIndex, itemColumnIndex);
+        setGameOverModalVisible(true);
+      } else {
+        setMinedBoard(
+          minedBoard.map((rowItem, rowIndex) => {
+            if (rowIndex === itemRowIndex) {
+              return rowItem.map((columnItem, columnIndex) => {
+                if (columnIndex === itemColumnIndex) {
+                  return { ...columnItem, opened: true };
+                }
+                return columnItem;
+              });
+            }
+            return rowItem;
+          }),
+        );
+      }
     }
   }
 
@@ -139,6 +182,8 @@ function BoardProvider({ children }) {
         difficulty,
         cleanBoard,
         minedBoard,
+        gameOverModalVisible,
+        toggleGameOverModal,
         invertFlag,
         openField,
       }}
