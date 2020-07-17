@@ -11,7 +11,7 @@ export default function GameOverModal() {
     <S.ModalContainer
       animationType="fade"
       transparent
-      visible={board.gameOverModalVisible}
+      visible={board.gameOver}
       onRequestClose={board.toggleGameOverModal}
     >
       <S.Container>

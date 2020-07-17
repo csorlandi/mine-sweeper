@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Dimensions } from 'react-native';
@@ -24,6 +24,9 @@ function BoardProvider({ children }) {
     return numberOfRowsRounded;
   });
   const [difficulty, setDifficulty] = useState(0.1);
+  const [minesAmount] = useState(() => {
+    return maxRowsNumber * maxColumnsNumber * difficulty;
+  });
   const [cleanBoard, setCleanBoard] = useState(() => {
     const board = Array(maxRowsNumber)
       .fill(0)
@@ -45,7 +48,6 @@ function BoardProvider({ children }) {
   });
   const [minedBoard, setMinedBoard] = useState(() => {
     const boardWithMines = cleanBoard;
-    const minesAmount = maxRowsNumber * maxColumnsNumber * difficulty;
 
     let minesSpread = 0;
 
@@ -86,10 +88,25 @@ function BoardProvider({ children }) {
 
     return boardWithMines;
   });
-  const [gameOverModalVisible, setGameOverModalVisible] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [win, setWin] = useState(false);
+
+  useEffect(() => {
+    const closedFields = minedBoard.reduce((acumulator, boardRows) => {
+      let closedFieldsCounter = acumulator;
+
+      boardRows.forEach(boardFields => {
+        if (!boardFields.opened) closedFieldsCounter += 1;
+      });
+
+      return closedFieldsCounter;
+    }, 0);
+
+    if (closedFields === minesAmount) setWin(true);
+  }, [minedBoard, minesAmount]);
 
   function toggleGameOverModal() {
-    setGameOverModalVisible(!gameOverModalVisible);
+    setGameOver(!gameOver);
   }
 
   function getNeighbors(itemRowIndex, itemColumnIndex) {
@@ -146,29 +163,47 @@ function BoardProvider({ children }) {
     );
   }
 
-  function openField(itemRowIndex, itemColumnIndex) {
-    const field = minedBoard[itemRowIndex][itemColumnIndex];
+  function cloneMinedBoard() {
+    return minedBoard.map(rows => rows.map(field => ({ ...field })));
+  }
+
+  function openField(itemRowIndex, itemColumnIndex, recursiveState = null) {
+    const minedBoardClone = !recursiveState
+      ? cloneMinedBoard()
+      : recursiveState;
+
+    const field = minedBoardClone[itemRowIndex][itemColumnIndex];
 
     if (!field.opened && !field.flagged) {
       const exploded = field.mined;
 
       if (exploded) {
         openBoardFields(itemRowIndex, itemColumnIndex);
-        setGameOverModalVisible(true);
+        setGameOver(true);
       } else {
-        setMinedBoard(
-          minedBoard.map((rowItem, rowIndex) => {
-            if (rowIndex === itemRowIndex) {
-              return rowItem.map((columnItem, columnIndex) => {
-                if (columnIndex === itemColumnIndex) {
-                  return { ...columnItem, opened: true };
-                }
-                return columnItem;
-              });
+        minedBoardClone[itemRowIndex][itemColumnIndex].opened = true;
+
+        if (
+          minedBoardClone[itemRowIndex][itemColumnIndex].nearMinesQuantity === 0
+        ) {
+          const neighbors = getNeighbors(itemRowIndex, itemColumnIndex);
+
+          neighbors.forEach(neighborField => {
+            if (
+              !neighborField.opened &&
+              !neighborField.flagged &&
+              !neighborField.mined
+            ) {
+              openField(
+                neighborField.row,
+                neighborField.column,
+                minedBoardClone,
+              );
             }
-            return rowItem;
-          }),
-        );
+          });
+        }
+
+        if (!recursiveState) setMinedBoard(minedBoardClone);
       }
     }
   }
@@ -182,7 +217,8 @@ function BoardProvider({ children }) {
         difficulty,
         cleanBoard,
         minedBoard,
-        gameOverModalVisible,
+        gameOver,
+        win,
         toggleGameOverModal,
         invertFlag,
         openField,
