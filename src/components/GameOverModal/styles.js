@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import Icon from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const ModalContainer = styled.Modal``;
 
@@ -13,8 +14,10 @@ export const Container = styled.View`
 
 export const ContentContainer = styled.View`
   background-color: #fff;
-  border-radius: 4px;
-  padding: 66px;
+  border-radius: 8px;
+  padding: 40px;
+  margin: 0 32px;
+  align-items: center;
 `;
 
 export const CloseButtonContainer = styled.TouchableOpacity.attrs({
@@ -28,9 +31,57 @@ export const CloseButtonContainer = styled.TouchableOpacity.attrs({
 
 export const CloseButtonIcon = styled(Icon)`
   font-size: 24px;
+  color: #3b95b1;
+`;
+
+export const BombIcon = styled(MaterialCommunityIcons)`
+  font-size: 48px;
+  color: #333333;
+`;
+
+export const MessageTitle = styled.Text`
+  font-size: 40px;
+  font-weight: bold;
+  color: #3b95b1;
 `;
 
 export const Message = styled.Text`
-  font-size: 40px;
-  font-weight: bold;
+  font-size: 18px;
+  color: #333333;
+  margin-top: 16px;
+  text-align: center;
+`;
+
+export const ButtonsContainer = styled.View`
+  margin-top: 32px;
+  align-self: stretch;
+`;
+
+export const ButtonContainer = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})`
+  background-color: ${({ featured }) => (featured ? '#3B95B1' : '#333333')};
+  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  padding: 16px 0;
+  margin-bottom: ${({ last }) => (last ? 0 : 8)}px;
+`;
+
+export const HomeIcon = styled(Icon)`
+  font-size: 18px;
+  color: #f2f2f2;
+`;
+
+export const NewGameIcon = styled(Icon)`
+  font-size: 18px;
+  color: #f2f2f2;
+`;
+
+export const ButtonText = styled.Text`
+  font-size: 16px;
+  font-weight: ${({ featured }) => (featured ? 'bold' : 'normal')};
+  color: #f2f2f2;
+  margin-left: 8px;
 `;
