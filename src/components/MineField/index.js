@@ -4,6 +4,7 @@ import { useBoard } from '~/hooks/board';
 
 import Field from '~/components/Field';
 import GameOverModal from '~/components/GameOverModal';
+import WinGameModal from '~/components/WinGameModal';
 
 import * as S from './styles';
 
@@ -23,6 +24,7 @@ export default function MineField() {
         </S.RowContainer>
       ))}
       <GameOverModal />
+      <WinGameModal />
     </S.Container>
   );
 }

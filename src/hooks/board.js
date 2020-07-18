@@ -109,6 +109,10 @@ function BoardProvider({ children }) {
     setGameOver(!gameOver);
   }
 
+  function toggleWinGameModal() {
+    setWin(!win);
+  }
+
   function getNeighbors(itemRowIndex, itemColumnIndex) {
     const neighbors = [];
     const rowNeighbors = [itemRowIndex - 1, itemRowIndex, itemRowIndex + 1];
@@ -219,6 +223,7 @@ function BoardProvider({ children }) {
         minedBoard,
         gameOver,
         win,
+        toggleWinGameModal,
         toggleGameOverModal,
         invertFlag,
         openField,

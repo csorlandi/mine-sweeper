@@ -35,9 +35,9 @@ export const CloseButtonIcon = styled(Icon)`
   color: #3b95b1;
 `;
 
-export const BombIcon = styled(MaterialCommunityIcons)`
+export const TrophyIcon = styled(MaterialCommunityIcons)`
   font-size: 48px;
-  color: #333333;
+  color: gold;
 `;
 
 export const MessageTitle = styled.Text`
@@ -51,6 +51,26 @@ export const Message = styled.Text`
   color: #333333;
   margin-top: 16px;
   text-align: center;
+`;
+
+export const TimerContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  margin-top: 16px;
+`;
+
+export const TimerIcon = styled(MaterialCommunityIcons)`
+  font-size: 24px;
+  color: #333333;
+`;
+
+export const TimerText = styled.Text`
+  font-size: 18px;
+  color: #333333;
+  margin-left: 8px;
+  font-weight: bold;
 `;
 
 export const ButtonsContainer = styled.View`
