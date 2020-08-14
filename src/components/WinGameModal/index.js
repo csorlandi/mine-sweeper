@@ -11,7 +11,7 @@ export default function WinGameModal() {
     <S.ModalContainer
       animationType="fade"
       transparent
-      visible={board.win}
+      visible={board.winModalVisibility}
       onRequestClose={board.toggleWinGameModal}
     >
       <S.Container>

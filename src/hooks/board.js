@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 
 import { Dimensions } from 'react-native';
 
+import {
+  getStatusBarHeight,
+  getBottomSpace,
+} from 'react-native-iphone-x-helper';
+
 const { width, height } = Dimensions.get('window');
 
 const BoardContext = createContext({});
@@ -16,8 +21,12 @@ function BoardProvider({ children }) {
 
     return blockSizeWithMargin;
   });
+  const [headerHeight] = useState(64);
   const [maxRowsNumber] = useState(() => {
-    const resizedHeight = height * 0.7;
+    const statusBarHeight = getStatusBarHeight(true);
+    const bottomSpace = getBottomSpace();
+
+    const resizedHeight = height - statusBarHeight - bottomSpace - headerHeight;
     const numberOfRowsWithoutRound = resizedHeight / (blockSize + 4);
     const numberOfRowsRounded = Math.floor(numberOfRowsWithoutRound);
 
@@ -25,7 +34,7 @@ function BoardProvider({ children }) {
   });
   const [difficulty, setDifficulty] = useState(0.1);
   const [minesAmount] = useState(() => {
-    return maxRowsNumber * maxColumnsNumber * difficulty;
+    return Math.round(maxRowsNumber * maxColumnsNumber * difficulty);
   });
   const [cleanBoard, setCleanBoard] = useState(() => {
     const board = Array(maxRowsNumber)
@@ -88,8 +97,26 @@ function BoardProvider({ children }) {
 
     return boardWithMines;
   });
+  const [remainingBombs, setRemainingBombs] = useState(minesAmount);
   const [gameOver, setGameOver] = useState(false);
+  const [winModalVisibility, setWinModalVisibility] = useState(false);
   const [win, setWin] = useState(false);
+
+  function flagBoardFields() {
+    setMinedBoard(
+      minedBoard.map(rowItem => {
+        return rowItem.map(columnItem => {
+          if (!columnItem.opened && !columnItem.flagged) {
+            return {
+              ...columnItem,
+              flagged: true,
+            };
+          }
+          return columnItem;
+        });
+      }),
+    );
+  }
 
   useEffect(() => {
     const closedFields = minedBoard.reduce((acumulator, boardRows) => {
@@ -102,7 +129,14 @@ function BoardProvider({ children }) {
       return closedFieldsCounter;
     }, 0);
 
-    if (closedFields === minesAmount) setWin(true);
+    if (closedFields === minesAmount) {
+      if (!win) {
+        flagBoardFields();
+        setRemainingBombs(0);
+        setWin(true);
+        setWinModalVisibility(true);
+      }
+    }
   }, [minedBoard, minesAmount]);
 
   function toggleGameOverModal() {
@@ -110,7 +144,7 @@ function BoardProvider({ children }) {
   }
 
   function toggleWinGameModal() {
-    setWin(!win);
+    setWinModalVisibility(!winModalVisibility);
   }
 
   function getNeighbors(itemRowIndex, itemColumnIndex) {
@@ -152,6 +186,18 @@ function BoardProvider({ children }) {
   }
 
   function invertFlag(itemRowIndex, itemColumnIndex) {
+    if (win) return;
+
+    const fieldStatus = minedBoard[itemRowIndex][itemColumnIndex].flagged;
+
+    if (remainingBombs === 0 && !fieldStatus) return;
+
+    const localReimainingBombs = fieldStatus
+      ? remainingBombs + 1
+      : remainingBombs - 1;
+
+    setRemainingBombs(localReimainingBombs);
+
     setMinedBoard(
       minedBoard.map((rowItem, rowIndex) => {
         if (rowIndex === itemRowIndex) {
@@ -223,6 +269,9 @@ function BoardProvider({ children }) {
         minedBoard,
         gameOver,
         win,
+        winModalVisibility,
+        headerHeight,
+        remainingBombs,
         toggleWinGameModal,
         toggleGameOverModal,
         invertFlag,
